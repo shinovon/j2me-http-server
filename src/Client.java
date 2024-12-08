@@ -1,5 +1,3 @@
-package httpserver;
-
 import java.io.*;
 import java.util.Enumeration;
 import java.util.Vector;
@@ -175,7 +173,7 @@ public class Client implements Runnable {
 								if ((i = r.indexOf('/')) != -1 || r.length() != 0) {
 									String parent = "/";
 									if (r.indexOf('/', i + 1) != -1) {
-										parent = r.substring(0, path.lastIndexOf('/'));
+										parent = "/".concat(r.substring(0, r.lastIndexOf('/')));
 									}
 									sb.append("<tr><td><a href=\"")
 									.append(parent)
@@ -294,7 +292,7 @@ public class Client implements Runnable {
 	
 	private void writeBody(InputStream in) throws IOException {
 		out.write(CRLF);
-		byte[] b = new byte[4096];
+		byte[] b = new byte[16384];
 		int i;
 		while ((i = in.read(b)) != -1) {
 			out.write(b, 0, i);
@@ -329,6 +327,14 @@ public class Client implements Runnable {
 			}
 			if (n.endsWith(".zip")) {
 				t = "application/zip";
+				break t;
+			}
+			if (n.endsWith(".mp4")) {
+				t = "video/mp4";
+				break t;
+			}
+			if (n.endsWith(".mp3")) {
+				t = "audio/mpeg";
 				break t;
 			}
 		}

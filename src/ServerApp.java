@@ -1,5 +1,3 @@
-package httpserver;
-
 import java.io.InterruptedIOException;
 
 import javax.microedition.io.*;
@@ -7,6 +5,8 @@ import javax.microedition.lcdui.*;
 import javax.microedition.midlet.MIDlet;
 
 public class ServerApp extends MIDlet implements Runnable, CommandListener {
+	
+	static final Font smallfont = Font.getFont(0, 0, Font.SIZE_SMALL);
 
 	static String server = "Something/1.0";
 	static ServerApp inst;
@@ -40,7 +40,7 @@ public class ServerApp extends MIDlet implements Runnable, CommandListener {
 		form = new Form("Http server");
 		form.addCommand(exitCmd = new Command("Exit", Command.EXIT, 1));
 		form.addCommand(startCmd = new Command("Start", Command.SCREEN, 1));
-		openCmd = new Command("Open", Command.SCREEN, 2);
+		openCmd = new Command("Open in browser", Command.SCREEN, 2);
 		stopCmd = new Command("Stop", Command.SCREEN, 3);
 		form.append(portField = new TextField("Port", "12345", 6, TextField.NUMERIC));
 		String root = System.getProperty("fileconn.dir.photos");
@@ -100,8 +100,8 @@ public class ServerApp extends MIDlet implements Runnable, CommandListener {
 			socket = (ServerSocketConnection) Connector.open("socket://:" + port);
 			started = true;
 			log("Server open: " + socket);
+			log("Local address: " + socket.getLocalAddress() + " (" + System.getProperty("microedition.hostname") + ')');
 			form.addCommand(openCmd);
-			commandAction(openCmd, null);
 			try {
 				while (thread != null) {
 					new Thread(new Client(socket.acceptAndOpen()), "HttpClient-" + (++clients)).start();
@@ -121,7 +121,9 @@ public class ServerApp extends MIDlet implements Runnable, CommandListener {
 	}
 
 	static void log(String s) {
-		form.append(s.concat("\n"));
+		StringItem t = new StringItem(null, s.concat("\n"));
+		t.setFont(smallfont);
+		form.append(t);
 		System.out.println(s);
 	}
 
